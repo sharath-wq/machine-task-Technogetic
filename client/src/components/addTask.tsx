@@ -21,6 +21,10 @@ import { CalendarIcon, PlusIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { Calendar } from './ui/calendar';
+import axios from 'axios';
+import { toast } from './ui/use-toast';
+import { useAppDispatch } from '@/redux/store';
+import { addTask } from '@/redux/task-slice';
 
 export const AddTaskValidation = z.object({
     title: z.string().min(3, { message: 'Title must be at least 3 characters.' }),
@@ -38,6 +42,8 @@ export const AddTaskValidation = z.object({
 });
 
 export default function AddTaskModal() {
+    const dispatch = useAppDispatch();
+
     const form = useForm<z.infer<typeof AddTaskValidation>>({
         resolver: zodResolver(AddTaskValidation),
         defaultValues: {
@@ -47,8 +53,23 @@ export default function AddTaskModal() {
         },
     });
 
-    function onSubmit(values: z.infer<typeof AddTaskValidation>) {
-        console.log(values);
+    async function onSubmit(values: z.infer<typeof AddTaskValidation>) {
+        try {
+            const { data } = await axios.post(`/api/tasks`, values);
+            toast({
+                description: 'New task added.',
+            });
+            dispatch(addTask(data));
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Uh oh! Something went wrong.',
+                description: 'There was a problem with your request.' + error,
+            });
+        } finally {
+            form.setValue('description', '');
+            form.setValue('title', '');
+        }
     }
 
     return (
@@ -135,7 +156,12 @@ export default function AddTaskModal() {
                             <DialogClose asChild>
                                 <Button variant='outline'>Cancel</Button>
                             </DialogClose>
-                            <Button className='ml-auto'>Save</Button>
+
+                            <DialogClose asChild>
+                                <Button type='submit' className='ml-auto'>
+                                    Save
+                                </Button>
+                            </DialogClose>
                         </DialogFooter>
                     </form>
                 </Form>

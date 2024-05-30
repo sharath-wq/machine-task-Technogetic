@@ -3,10 +3,11 @@ import EditTaskModal from '../editTask';
 import DeleteTaskModal from '../deleteTask';
 
 interface TaskCardProps {
+    id: string;
     title: string;
     description: string;
     status: 'pending' | 'in progress' | 'completed';
-    dueDate: string;
+    due_date: string;
 }
 
 const statusColor = {
@@ -15,7 +16,7 @@ const statusColor = {
     completed: 'bg-green-500',
 };
 
-const TaskCard = ({ title, description, dueDate, status }: TaskCardProps) => {
+const TaskCard = ({ id, title, description, due_date, status }: TaskCardProps) => {
     return (
         <Card className='bg-white shadow-md flex flex-col'>
             <CardContent className='p-4 flex-grow'>
@@ -26,15 +27,19 @@ const TaskCard = ({ title, description, dueDate, status }: TaskCardProps) => {
             </CardContent>
             <div className='flex items-center justify-between px-4'>
                 <div className='text-sm text-gray-500'>
-                    Due: <span className='font-medium'>{dueDate}</span>
+                    Due:{' '}
+                    <span className='font-medium'>
+                        {new Date(due_date).setFullYear(2023) &&
+                            new Date(new Date('2024-06-04T18:30:00.000Z').setFullYear(2023)).toISOString().split('T')[0]}
+                    </span>
                 </div>
                 <div className={`rounded-full ${statusColor[status]} px-3 py-1 text-xs font-medium text-white`}>
                     {status}
                 </div>
             </div>
             <div className='p-4 flex justify-end gap-2'>
-                <EditTaskModal />
-                <DeleteTaskModal />
+                <EditTaskModal id={id} />
+                <DeleteTaskModal id={id} />
             </div>
         </Card>
     );

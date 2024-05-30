@@ -1,8 +1,30 @@
 import { Button } from '@/components/ui/button';
 import { DialogTrigger, DialogTitle, DialogHeader, DialogContent, Dialog, DialogClose } from '@/components/ui/dialog';
+import axios from 'axios';
 import { Trash2Icon } from 'lucide-react';
+import { toast } from './ui/use-toast';
+import { useAppDispatch } from '@/redux/store';
+import { removeTask } from '@/redux/task-slice';
 
-export default function DeleteTaskModal() {
+export default function DeleteTaskModal({ id }: { id: string }) {
+    const dispatch = useAppDispatch();
+
+    async function onDelete() {
+        try {
+            const { data } = await axios.delete(`/api/tasks/${id}`);
+            toast({
+                description: 'Task Deleted.',
+            });
+            dispatch(removeTask(data.id));
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Uh oh! Something went wrong.',
+                description: 'There was a problem with your request.' + error,
+            });
+        }
+    }
+
     return (
         <Dialog>
             <DialogTrigger asChild>
@@ -31,9 +53,11 @@ export default function DeleteTaskModal() {
                                         Cancel
                                     </Button>
                                 </DialogClose>
-                                <Button type='submit' variant='destructive'>
-                                    Delete
-                                </Button>
+                                <DialogClose asChild>
+                                    <Button onClick={onDelete} type='submit' variant='destructive'>
+                                        Delete
+                                    </Button>
+                                </DialogClose>
                             </div>
                         </div>
                     </div>

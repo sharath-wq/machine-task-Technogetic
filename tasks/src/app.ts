@@ -8,6 +8,7 @@ import { createTaskRouter } from './routes/new';
 import { indexTasksRouter } from './routes/index';
 import { updateTaskRouter } from './routes/update';
 import { showTaskRouter } from './routes/show';
+import { deleteTaskRouter } from './routes/delete';
 
 const app = express();
 app.set('trust proxy', true);
@@ -25,6 +26,7 @@ app.use(createTaskRouter);
 app.use(indexTasksRouter);
 app.use(updateTaskRouter);
 app.use(showTaskRouter);
+app.use(deleteTaskRouter);
 
 app.all('*', async () => {
     throw new NotFoundError();

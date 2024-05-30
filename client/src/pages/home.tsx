@@ -1,25 +1,36 @@
 import AddTaskModal from '@/components/addTask';
 
-import { tasks } from '@/constants';
 import TaskCard from '@/components/home/task-card';
-import { useAppDispatch, useAppSelector } from '@/redux/store';
-import { setUser } from '@/redux/user-slice';
 import User from '@/components/user-icon';
+import axios from 'axios';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { setTasks } from '@/redux/task-slice';
+import { toast } from '@/components/ui/use-toast';
+import { useEffect } from 'react';
 
 export default function HomePage() {
-    // const user = useAppSelector((state) => state.user);
+    const dispatch = useAppDispatch();
 
-    // console.log(user);
+    const tasks = useAppSelector((state) => state.tasks.tasks);
 
-    // const usera = {
-    //     id: '123',
-    //     email: 'skdf',
-    //     name: 'dfkajs',
-    // };
+    const fetchTasks = async () => {
+        try {
+            axios.defaults.withCredentials = true;
+            const { data } = await axios.get(`/api/tasks`);
 
-    // const dispatch = useAppDispatch();
+            dispatch(setTasks(data));
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Uh oh! Something went wrong.',
+                description: 'There was a problem with your request.' + error,
+            });
+        }
+    };
 
-    // dispatch(setUser(usera));
+    useEffect(() => {
+        fetchTasks();
+    }, []);
 
     return (
         <>
@@ -32,12 +43,13 @@ export default function HomePage() {
             </header>
             {tasks.length ? (
                 <main className='container mx-auto my-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>
-                    {tasks.map((task: any, index: number) => (
+                    {tasks.map((task: any) => (
                         <TaskCard
-                            key={index}
+                            id={task.id}
+                            key={task.id}
                             title={task.title}
                             description={task.description}
-                            dueDate={task.dueDate}
+                            due_date={task.due_date}
                             status={task.status}
                         />
                     ))}

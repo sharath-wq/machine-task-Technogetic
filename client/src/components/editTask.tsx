@@ -22,6 +22,10 @@ import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { Calendar } from './ui/calendar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import axios from 'axios';
+import { toast } from './ui/use-toast';
+import { useAppDispatch, useAppSelector } from '@/redux/store';
+import { updateTask } from '@/redux/task-slice';
 
 export const EditTaskValidation = z.object({
     title: z.string().min(3, { message: 'Title must be at least 3 characters.' }),
@@ -41,19 +45,34 @@ export const EditTaskValidation = z.object({
     }),
 });
 
-export default function EditTaskModal() {
+export default function EditTaskModal({ id }: { id: string }) {
+    const dispatch = useAppDispatch();
+    const task = useAppSelector((state) => state.tasks.tasks).find((task) => task.id === id);
+
     const form = useForm<z.infer<typeof EditTaskValidation>>({
         resolver: zodResolver(EditTaskValidation),
         defaultValues: {
-            title: '',
-            description: '',
-            due_date: new Date(),
-            status: '',
+            title: task?.title,
+            description: task?.description,
+            due_date: task?.due_date,
+            status: task?.status,
         },
     });
 
-    function onSubmit(values: z.infer<typeof EditTaskValidation>) {
-        console.log(values);
+    async function onSubmit(values: z.infer<typeof EditTaskValidation>) {
+        try {
+            const { data } = await axios.put(`/api/tasks/${id}`, values);
+            toast({
+                description: 'Task updated.',
+            });
+            dispatch(updateTask({ id, updatedTask: data }));
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Uh oh! Something went wrong.',
+                description: 'There was a problem with your request.' + error,
+            });
+        }
     }
 
     return (
@@ -163,7 +182,11 @@ export default function EditTaskModal() {
                             <DialogClose asChild>
                                 <Button variant='outline'>Cancel</Button>
                             </DialogClose>
-                            <Button className='ml-auto'>Save</Button>
+                            <DialogClose asChild>
+                                <Button type='submit' className='ml-auto'>
+                                    Save
+                                </Button>
+                            </DialogClose>
                         </DialogFooter>
                     </form>
                 </Form>
