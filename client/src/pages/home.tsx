@@ -4,6 +4,7 @@ import { tasks } from '@/constants';
 import TaskCard from '@/components/home/task-card';
 import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { setUser } from '@/redux/user-slice';
+import User from '@/components/user-icon';
 
 export default function HomePage() {
     // const user = useAppSelector((state) => state.user);
@@ -24,7 +25,10 @@ export default function HomePage() {
         <>
             <header className='flex items-center justify-between bg-gray-900 px-6 py-4 text-white'>
                 <h1 className='text-2xl font-bold'>Task Manager</h1>
-                <AddTaskModal />
+                <div className='flex gap-2'>
+                    <AddTaskModal />
+                    <User />
+                </div>
             </header>
             {tasks.length ? (
                 <main className='container mx-auto my-8 grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4'>

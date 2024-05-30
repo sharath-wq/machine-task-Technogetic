@@ -7,6 +7,11 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from '@/components/ui/use-toast';
+import { useAppDispatch } from '@/redux/store';
+import { setUser } from '@/redux/user-slice';
+import { Loader } from 'lucide-react';
 
 export const SigninValidation = z.object({
     email: z.string().email(),
@@ -14,6 +19,8 @@ export const SigninValidation = z.object({
 });
 
 export default function LoginPage() {
+    const dispatch = useAppDispatch();
+
     const form = useForm<z.infer<typeof SigninValidation>>({
         resolver: zodResolver(SigninValidation),
         defaultValues: {
@@ -22,7 +29,24 @@ export default function LoginPage() {
         },
     });
 
-    function onSubmit(values: z.infer<typeof SigninValidation>) {}
+    async function onSubmit(values: z.infer<typeof SigninValidation>) {
+        try {
+            const { data } = await axios.post(`/api/users/signin`, values);
+            toast({
+                description: 'Logged In.',
+            });
+
+            dispatch(setUser(data));
+        } catch (error) {
+            toast({
+                variant: 'destructive',
+                title: 'Uh oh! Something went wrong.',
+                description: 'There was a problem with your request.' + error,
+            });
+        }
+    }
+
+    const { isSubmitting } = form.formState;
 
     return (
         <div className='flex h-screen w-full items-center justify-center bg-gray-100 px-4 dark:bg-gray-950'>
@@ -55,14 +79,14 @@ export default function LoginPage() {
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
-                                            <Input placeholder='Enter your password' {...field} />
+                                            <Input type='password' placeholder='Enter your password' {...field} />
                                         </FormControl>
                                         <FormMessage />
                                     </FormItem>
                                 )}
                             />
                             <Button className='w-full' type='submit'>
-                                Sign in
+                                {isSubmitting ? <Loader /> : ' Sign in'}
                             </Button>
                             <Link to={'/signup'} className='text-sm font-normal text-primary-500 hover:underline'>
                                 Don't have an account signup

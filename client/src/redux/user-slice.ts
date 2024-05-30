@@ -13,15 +13,48 @@ const initialState: UserState = {
     email: null,
 };
 
+const loadState = () => {
+    try {
+        const serializedState = localStorage.getItem('userState');
+        if (serializedState === null) {
+            return initialState;
+        }
+        return JSON.parse(serializedState);
+    } catch (err) {
+        return initialState;
+    }
+};
+
+const saveState = (state: UserState) => {
+    try {
+        const serializedState = JSON.stringify(state);
+        localStorage.setItem('userState', serializedState);
+    } catch (err) {
+        console.log(err);
+    }
+};
+
+const clearState = () => {
+    try {
+        localStorage.removeItem('userState');
+    } catch (err) {
+        console.log(err);
+    }
+};
+
 export const userSlice = createSlice({
     name: 'user',
-    initialState,
+    initialState: loadState(),
     reducers: {
         setUser: (state, action: PayloadAction<UserState>) => {
-            return { ...state, ...action.payload };
+            const newState = { ...state, ...action.payload };
+            saveState(newState);
+            return newState;
         },
-
-        clearUser: () => initialState,
+        clearUser: () => {
+            clearState();
+            return initialState;
+        },
     },
 });
 

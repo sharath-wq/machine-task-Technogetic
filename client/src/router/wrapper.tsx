@@ -1,9 +1,11 @@
 import { Navigate, Outlet } from 'react-router-dom';
 
-const ProtectedRoutes = () => {
-    const currentUser = true;
+import { useAppSelector } from '@/redux/store';
 
-    if (currentUser) {
+const ProtectedRoutes = () => {
+    const currentUser = useAppSelector((state) => state.user);
+
+    if (currentUser.id) {
         return <Outlet />;
     }
 
@@ -11,9 +13,9 @@ const ProtectedRoutes = () => {
 };
 
 const PublicRoutes = () => {
-    const currentUser = true;
+    const currentUser = useAppSelector((state) => state.user);
 
-    if (currentUser) {
+    if (currentUser.id) {
         return <Navigate to={'/'} />;
     }
 
