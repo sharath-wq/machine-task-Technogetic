@@ -1,6 +1,6 @@
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { DeleteIcon, Trash2Icon } from 'lucide-react';
+import EditTaskModal from '../editTask';
+import DeleteTaskModal from '../deleteTask';
 
 interface TaskCardProps {
     title: string;
@@ -33,14 +33,8 @@ const TaskCard = ({ title, description, dueDate, status }: TaskCardProps) => {
                 </div>
             </div>
             <div className='p-4 flex justify-end gap-2'>
-                <Button size='sm' variant='outline'>
-                    <DeleteIcon className='mr-2 h-4 w-4' />
-                    Edit
-                </Button>
-                <Button className='text-red-500' size='sm' variant='outline'>
-                    <Trash2Icon className='mr-2 h-4 w-4' />
-                    Delete
-                </Button>
+                <EditTaskModal />
+                <DeleteTaskModal />
             </div>
         </Card>
     );

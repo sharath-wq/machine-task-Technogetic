@@ -17,12 +17,13 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { CalendarIcon, PlusIcon } from 'lucide-react';
+import { CalendarIcon, DeleteIcon } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 import { cn } from '@/lib/utils';
 import { Calendar } from './ui/calendar';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-export const AddTaskValidation = z.object({
+export const EditTaskValidation = z.object({
     title: z.string().min(3, { message: 'Title must be at least 3 characters.' }),
     description: z
         .string()
@@ -35,34 +36,38 @@ export const AddTaskValidation = z.object({
     due_date: z.date({
         required_error: 'A due date is requried',
     }),
+    status: z.string({
+        required_error: 'Please select a status.',
+    }),
 });
 
-export default function AddTaskModal() {
-    const form = useForm<z.infer<typeof AddTaskValidation>>({
-        resolver: zodResolver(AddTaskValidation),
+export default function EditTaskModal() {
+    const form = useForm<z.infer<typeof EditTaskValidation>>({
+        resolver: zodResolver(EditTaskValidation),
         defaultValues: {
             title: '',
             description: '',
             due_date: new Date(),
+            status: '',
         },
     });
 
-    function onSubmit(values: z.infer<typeof AddTaskValidation>) {
+    function onSubmit(values: z.infer<typeof EditTaskValidation>) {
         console.log(values);
     }
 
     return (
         <Dialog>
             <DialogTrigger asChild>
-                <Button className='bg-blue-500 hover:bg-blue-600' size='sm'>
-                    <PlusIcon className='mr-2 h-4 w-4' />
-                    New Task
+                <Button size='sm' variant='outline'>
+                    <DeleteIcon className='mr-2 h-4 w-4' />
+                    Edit
                 </Button>
             </DialogTrigger>
 
             <DialogContent className='sm:max-w-[425px]'>
                 <DialogHeader>
-                    <DialogTitle>Add Task</DialogTitle>
+                    <DialogTitle>Edit Task</DialogTitle>
                 </DialogHeader>
 
                 <Form {...form}>
@@ -126,6 +131,29 @@ export default function AddTaskModal() {
                                             />
                                         </PopoverContent>
                                     </Popover>
+                                    <FormMessage />
+                                </FormItem>
+                            )}
+                        />
+
+                        <FormField
+                            control={form.control}
+                            name='status'
+                            render={({ field }) => (
+                                <FormItem>
+                                    <FormLabel>Status</FormLabel>
+                                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <FormControl>
+                                            <SelectTrigger>
+                                                <SelectValue placeholder='Select a verified email to display' />
+                                            </SelectTrigger>
+                                        </FormControl>
+                                        <SelectContent>
+                                            <SelectItem value='pending'>Pending</SelectItem>
+                                            <SelectItem value='in progress'>In Progress</SelectItem>
+                                            <SelectItem value='completed'>Completed</SelectItem>
+                                        </SelectContent>
+                                    </Select>
                                     <FormMessage />
                                 </FormItem>
                             )}
