@@ -24,11 +24,11 @@ build:
               manual:
                   - src: 'src/**/*.ts'
                     dest: .
-        # - image: sharathchandranp/technogetic-client
-        #   context: client
-        #   docker:
-        #       dockerfile: Dockerfile
-        #   sync:
-        #       manual:
-        #           - src: '**/*{.js, .css}'
-        #             dest: .
+        - image: sharathchandranp/technogetic-client
+          context: client
+          docker:
+              dockerfile: Dockerfile
+          sync:
+              manual:
+                  - src: 'src/**/*{.ts, .tsx, .js, .jsx, .css}'
+                    dest: .

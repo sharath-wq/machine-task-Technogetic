@@ -16,14 +16,6 @@ spec:
                 - name: auth
                   image: sharathchandranp/technogetic-auth
                   env:
-                      - name: NATS_CLIENT_ID
-                        valueFrom:
-                            fieldRef:
-                                fieldPath: metadata.name
-                      - name: NATS_URL
-                        value: 'http://nats-srv:4222'
-                      - name: 'NATS_CLUSTER_ID'
-                        value: technogetic
                       - name: MONGO_URI
                         valueFrom:
                             secretKeyRef:
