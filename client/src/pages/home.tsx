@@ -6,19 +6,19 @@ import { useAppDispatch, useAppSelector } from '@/redux/store';
 import { setUser } from '@/redux/user-slice';
 
 export default function HomePage() {
-    const user = useAppSelector((state) => state.user);
+    // const user = useAppSelector((state) => state.user);
 
-    console.log(user);
+    // console.log(user);
 
-    const usera = {
-        id: '123',
-        email: 'skdf',
-        name: 'dfkajs',
-    };
+    // const usera = {
+    //     id: '123',
+    //     email: 'skdf',
+    //     name: 'dfkajs',
+    // };
 
-    const dispatch = useAppDispatch();
+    // const dispatch = useAppDispatch();
 
-    dispatch(setUser(usera));
+    // dispatch(setUser(usera));
 
     return (
         <>

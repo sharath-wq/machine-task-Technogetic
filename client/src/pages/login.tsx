@@ -1,9 +1,30 @@
+import { z } from 'zod';
+
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useForm } from 'react-hook-form';
+
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
 
+export const SigninValidation = z.object({
+    email: z.string().email(),
+    password: z.string().min(8, { message: 'Password must be at least 8 characters.' }),
+});
+
 export default function LoginPage() {
+    const form = useForm<z.infer<typeof SigninValidation>>({
+        resolver: zodResolver(SigninValidation),
+        defaultValues: {
+            email: '',
+            password: '',
+        },
+    });
+
+    function onSubmit(values: z.infer<typeof SigninValidation>) {}
+
     return (
         <div className='flex h-screen w-full items-center justify-center bg-gray-100 px-4 dark:bg-gray-950'>
             <div className='w-full max-w-md rounded-lg bg-white p-8 shadow-lg dark:bg-gray-900'>
@@ -12,24 +33,43 @@ export default function LoginPage() {
                         <h1 className='text-3xl font-bold'>Welcome back!</h1>
                         <p className='text-gray-500 dark:text-gray-400'>Sign in to your account to manage your tasks.</p>
                     </div>
-                    <form className='space-y-4'>
-                        <div className='flex flex-col gap-2'>
-                            <Label htmlFor='Email'>Email</Label>
-                            <Input id='Email' placeholder='Enter your email' required type='text' />
-                        </div>
-                        <div className='flex flex-col gap-2'>
-                            <div className='flex items-center justify-between'>
-                                <Label htmlFor='password'>Password</Label>
-                            </div>
-                            <Input id='password' placeholder='Enter your password' required type='password' />
-                        </div>
-                        <Button className='w-full' type='submit'>
-                            Sign in
-                        </Button>
-                        <Link to={'/signup'} className='text-sm font-normal text-primary-500 hover:underline'>
-                            Don't have an account signup
-                        </Link>
-                    </form>
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
+                            <FormField
+                                control={form.control}
+                                name='email'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder='Enter your email' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            <FormField
+                                control={form.control}
+                                name='password'
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Password</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder='Enter your password' {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <Button className='w-full' type='submit'>
+                                Sign in
+                            </Button>
+                            <Link to={'/signup'} className='text-sm font-normal text-primary-500 hover:underline'>
+                                Don't have an account signup
+                            </Link>
+                        </form>
+                    </Form>
                 </div>
             </div>
         </div>
